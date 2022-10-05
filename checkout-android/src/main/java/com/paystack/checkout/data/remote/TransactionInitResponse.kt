@@ -9,7 +9,7 @@ import com.squareup.moshi.JsonClass
 internal data class TransactionInitResponse(
     val status: String,
     val message: String,
-    val id: Int,
+    val id: Long,
     @Json(name = "access_code")
     val accessCode: String,
     val amount: Long,

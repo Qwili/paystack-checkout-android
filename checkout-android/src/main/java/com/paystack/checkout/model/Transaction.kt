@@ -9,7 +9,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 @JsonClass(generateAdapter = true)
 data class Transaction(
-    val id: Int,
+    val id: Long,
     val accessCode: String,
     val amount: Long,
     val currency: String,
