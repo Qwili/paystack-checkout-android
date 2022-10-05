@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         "}";
 
         payBtn.setOnClickListener(v -> {
-            PaystackCheckout checkout = new PaystackCheckout.Builder(this, "michael@paystack.com", 10000, "NGN")
+            PaystackCheckout checkout = new PaystackCheckout.Builder(this, this, getActivityResultRegistry(), "michael@paystack.com", 10000, "NGN")
                     .channels(PaymentChannel.card, PaymentChannel.qr, PaymentChannel.bank_transfer)
                     .metadata(metadata)
                     .reference("lezzGoLIvEagAIn41")

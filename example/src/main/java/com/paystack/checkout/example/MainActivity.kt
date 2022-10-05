@@ -63,8 +63,8 @@ class MainActivity : AppCompatActivity() {
         """.trimIndent()
 
         val checkoutBuilder = PaystackCheckout.Builder(
-            this, "again@week.com",
-            50000, "NGN"
+            this, this, activityResultRegistry,
+            "again@week.com", 50000, "NGN"
         )
 
         checkoutBuilder.apply {

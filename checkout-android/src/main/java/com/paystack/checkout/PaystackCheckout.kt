@@ -2,15 +2,15 @@ package com.paystack.checkout
 
 import android.content.Context
 import android.content.pm.PackageManager
+import androidx.activity.result.ActivityResultCaller
 import androidx.activity.result.ActivityResultRegistry
-import androidx.appcompat.app.AppCompatActivity
 import com.paystack.checkout.model.ChargeParams
 import com.paystack.checkout.model.ChargeResult
 import com.paystack.checkout.model.PaymentChannel
 import com.paystack.checkout.ui.PayWithCheckout
 
 class PaystackCheckout private constructor(
-    private val activity: AppCompatActivity,
+    private val activityResultCaller: ActivityResultCaller,
     private val resultRegistry: ActivityResultRegistry,
     private val publicKey: String,
     private val email: String,
@@ -47,24 +47,32 @@ class PaystackCheckout private constructor(
             metadata
         )
 
-    fun charge(resultListener: CheckoutResultListener) {
-        activity.registerForActivityResult(PayWithCheckout(), resultRegistry) { chargeResult ->
+    private lateinit var resultListener: CheckoutResultListener
+
+    private val preContractStartActivityResult =
+        activityResultCaller.registerForActivityResult(PayWithCheckout(), resultRegistry) { chargeResult ->
             when (chargeResult) {
                 is ChargeResult.Success -> resultListener.onSuccess(chargeResult.transaction)
                 is ChargeResult.Error -> resultListener.onError(chargeResult.exception)
                 ChargeResult.Cancelled -> resultListener.onCancelled()
             }
-        }.launch(chargeParams)
+        }
+
+    fun charge(resultListener: CheckoutResultListener) {
+        this.resultListener = resultListener
+        preContractStartActivityResult.launch(chargeParams)
     }
 
     class Builder(
-        private val activity: AppCompatActivity,
+        private val context: Context,
+        private val resultCaller: ActivityResultCaller,
+        private val resultRegistry: ActivityResultRegistry,
         private val email: String,
         private val amount: Long,
         private val currency: String,
     ) {
-        private var activityResultRegistry: ActivityResultRegistry = activity.activityResultRegistry
-        private var publicKey = getPublicKeyFromManifest(activity)
+        private var activityResultRegistry = resultRegistry
+        private var publicKey = getPublicKeyFromManifest(context)
 
         private var channels: List<PaymentChannel>? = null
         private var phone: String? = null
@@ -145,7 +153,7 @@ class PaystackCheckout private constructor(
 
         fun build(): PaystackCheckout {
             return PaystackCheckout(
-                activity,
+                resultCaller,
                 activityResultRegistry,
                 publicKey,
                 email,
