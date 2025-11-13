@@ -1,7 +1,7 @@
 package com.paystack.checkout.model
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 internal sealed class ChargeResult : Parcelable {
     @Parcelize

@@ -3,8 +3,9 @@ package com.paystack.checkout.model
 import android.os.Parcelable
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
-import kotlinx.android.parcel.IgnoredOnParcel
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
+
 
 @Parcelize
 internal data class ChargeParams(

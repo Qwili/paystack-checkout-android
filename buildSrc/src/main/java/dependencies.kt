@@ -1,11 +1,7 @@
 object Libs {
-    const val androidGradlePlugin = "com.android.tools.build:gradle:4.1.0"
+    const val androidGradlePlugin = "com.android.tools.build:gradle:8.13.1"
     const val kotlinResult = "com.michael-bull.kotlin-result:kotlin-result:1.1.9"
     const val ktlintGradlePlugin = "org.jlleitschuh.gradle:ktlint-gradle:9.4.0"
-
-    const val bintrayPlugin = "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4"
-    const val androidMavenPlugin = "com.github.dcendents:android-maven-gradle-plugin:2.1"
-
     const val moshiLazyAdapters = "com.serjltt.moshi:moshi-lazy-adapters:2.2"
 
 
@@ -63,7 +59,7 @@ object Libs {
     }
 
     object Moshi {
-        private const val version = "1.10.0"
+        private const val version = "1.15.2"
         const val moshi = "com.squareup.moshi:moshi-kotlin:$version"
         const val moshiAdapters = "com.squareup.moshi:moshi-adapters:$version"
         const val moshiCodegen = "com.squareup.moshi:moshi-kotlin-codegen:$version"

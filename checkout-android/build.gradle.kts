@@ -1,19 +1,17 @@
 plugins {
     id("com.android.library")
+    id("kotlin-parcelize")
     kotlin("android")
-    id("kotlin-android-extensions")
     kotlin("kapt")
 }
 
 android {
-    compileSdkVersion(30)
-    buildToolsVersion = "29.0.3"
-
+    compileSdkVersion(35)
     defaultConfig {
         minSdkVersion(21)
-        targetSdkVersion(30)
-        versionCode = 1
-        versionName = "1.0"
+        targetSdkVersion(33)
+//        versionCode = 1
+//        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -34,21 +32,28 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
         freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
     }
-
-    lintOptions {
-        enable("Interoperability")
+    packagingOptions {
+        resources {
+            excludes += setOf("META-INF/*.kotlin_module")
+        }
     }
 
-    packagingOptions {
-        exclude("META-INF/*.kotlin_module")
+    namespace = "com.paystack.checkout"
+    lint {
+        enable += setOf("Interoperability")
+    }
+}
+
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
@@ -115,5 +120,3 @@ extra.apply {
     set("licenseUrl", "https://opensource.org/licenses/Apache-2.0")
     set("allLicenses", arrayOf("Apache-2.0"))
 }
-
-apply(from = "publish.gradle")

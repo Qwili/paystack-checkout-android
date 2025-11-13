@@ -3,7 +3,7 @@ package com.paystack.checkout.model
 import android.os.Parcelable
 import androidx.annotation.Keep
 import com.squareup.moshi.JsonClass
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Keep
 @Parcelize

@@ -5,13 +5,14 @@ plugins {
 }
 
 android {
-    compileSdkVersion(30)
-    buildToolsVersion("29.0.3")
+    compileSdkVersion(35)
+
+    namespace = "com.paystack.checkout.example"
 
     defaultConfig {
-        applicationId("com.paystack.checkout.example")
+        applicationId = "com.paystack.checkout.example"
         minSdkVersion(21)
-        targetSdkVersion(30)
+        targetSdkVersion(33)
         versionCode = 1
         versionName = "1.0"
 
@@ -32,11 +33,14 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
+}
+
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
@@ -46,9 +50,9 @@ dependencies {
     implementation(Libs.AndroidX.coreKtx)
     implementation(Libs.AndroidX.appcompat)
     implementation(project(":checkout-android"))
-    implementation("androidx.appcompat:appcompat:1.2.0")
+    implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${rootProject.extra["kotlin_version"]}")
-    implementation("androidx.constraintlayout:constraintlayout:2.0.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
 
     testImplementation(Libs.junit)
     testImplementation(Libs.mockitoKotlin)
