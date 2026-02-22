@@ -1,12 +1,15 @@
 package com.paystack.checkout.model
 
 import android.os.Parcelable
+import androidx.annotation.Keep
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 
+@Keep
 @Parcelize
 internal data class ChargeParams(
     val publicKey: String,
@@ -27,8 +30,10 @@ internal data class ChargeParams(
 ) : Parcelable {
 
     @IgnoredOnParcel
-    private val channelsJsonAdapter: JsonAdapter<List<String>> = Moshi.Builder()
-        .build().adapter<List<String>>(List::class.java)
+    private val channelsJsonAdapter: JsonAdapter<List<String>> by lazy {
+        val type = Types.newParameterizedType(List::class.java, String::class.java)
+        Moshi.Builder().build().adapter<List<String>>(type)
+    }
 
     private val channelsJson: String?
         get() = channels?.map { it.name }?.let { channelsJsonAdapter.toJson(it) }
