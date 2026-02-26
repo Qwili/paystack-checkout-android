@@ -49,6 +49,7 @@ internal class CheckoutActivity : AppCompatActivity() {
         binding = CheckoutActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        intent.extras?.classLoader = ChargeParams::class.java.classLoader
         val params = intent.getParcelableExtra<ChargeParams>(EXTRA_CHARGE_PARAMS)
             ?: error("Charge parameters not found")
         viewModel.state.observe(this) { state ->
