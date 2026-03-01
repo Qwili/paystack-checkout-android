@@ -51,10 +51,15 @@ internal class CheckoutActivity : AppCompatActivity() {
 
         intent.extras?.classLoader = ChargeParams::class.java.classLoader
         val params = intent.getParcelableExtra<ChargeParams>(EXTRA_CHARGE_PARAMS)
-            ?: error("Charge parameters not found")
+
+        if (params == null) {
+            closeWithError(IllegalStateException("Charge parameters not found"))
+            return
+        }
+
         viewModel.state.observe(this) { state ->
             val errorOccurred = state.initError?.consumeIfAvailable { exception ->
-                handleCheckoutEvent(ErrorEvent(exception))
+                closeWithError(exception)
             } ?: false
 
             if (errorOccurred) return@observe
