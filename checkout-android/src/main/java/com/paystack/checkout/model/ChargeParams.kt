@@ -11,7 +11,7 @@ import kotlinx.parcelize.Parcelize
 
 @Keep
 @Parcelize
-internal data class ChargeParams(
+data class ChargeParams(
     val publicKey: String,
     val email: String,
     val amount: Long,

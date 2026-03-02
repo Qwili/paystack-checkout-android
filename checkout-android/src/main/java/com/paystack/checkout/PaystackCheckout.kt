@@ -2,16 +2,18 @@ package com.paystack.checkout
 
 import android.content.Context
 import android.content.pm.PackageManager
+import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultCaller
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
+import androidx.fragment.app.Fragment
 import com.paystack.checkout.model.ChargeParams
 import com.paystack.checkout.model.ChargeResult
 import com.paystack.checkout.model.PaymentChannel
 import com.paystack.checkout.ui.PayWithCheckout
 
 class PaystackCheckout private constructor(
-    private val activityResultCaller: ActivityResultCaller,
-    private val resultRegistry: ActivityResultRegistry,
+    private val launcher: ActivityResultLauncher<ChargeParams>,
     private val publicKey: String,
     private val email: String,
     private val amount: Long,
@@ -47,33 +49,17 @@ class PaystackCheckout private constructor(
             metadata
         )
 
-    private lateinit var resultListener: CheckoutResultListener
-
-    private val preContractStartActivityResult =
-        activityResultCaller.registerForActivityResult(PayWithCheckout(), resultRegistry) { chargeResult ->
-            when (chargeResult) {
-                is ChargeResult.Success -> resultListener.onSuccess(chargeResult.transaction)
-                is ChargeResult.Error -> resultListener.onError(chargeResult.exception)
-                ChargeResult.Cancelled -> resultListener.onCancelled()
-            }
-        }
-
-    fun charge(resultListener: CheckoutResultListener) {
-        this.resultListener = resultListener
-        preContractStartActivityResult.launch(chargeParams)
+    fun charge() {
+        launcher.launch(chargeParams)
     }
 
     class Builder(
         private val context: Context,
-        private val resultCaller: ActivityResultCaller,
-        private val resultRegistry: ActivityResultRegistry,
         private val email: String,
         private val amount: Long,
         private val currency: String,
     ) {
-        private var activityResultRegistry = resultRegistry
         private var publicKey = getPublicKeyFromManifest(context)
-
         private var channels: List<PaymentChannel>? = null
         private var phone: String? = null
         private var label: String? = null
@@ -85,11 +71,6 @@ class PaystackCheckout private constructor(
         private var plan: String? = null
         private var quantity: Long? = null
         private var metadata: String? = null
-
-        fun activityResultRegistry(resultRegistry: ActivityResultRegistry): Builder {
-            this.activityResultRegistry = resultRegistry
-            return this
-        }
 
         fun publicKey(publicKey: String): Builder {
             this.publicKey = publicKey
@@ -151,10 +132,9 @@ class PaystackCheckout private constructor(
             return this
         }
 
-        fun build(): PaystackCheckout {
+        fun build(launcher: ActivityResultLauncher<ChargeParams>): PaystackCheckout {
             return PaystackCheckout(
-                resultCaller,
-                activityResultRegistry,
+                launcher,
                 publicKey,
                 email,
                 amount,
@@ -184,5 +164,31 @@ class PaystackCheckout private constructor(
 
     internal companion object {
         const val KEY_PUBLIC_KEY_PROP = "com.paystack.checkout.PublicKey"
+
+        fun register(
+            activity: ComponentActivity,
+            resultListener: CheckoutResultListener
+        ): ActivityResultLauncher<ChargeParams> {
+            return activity.registerForActivityResult(PayWithCheckout()) { chargeResult ->
+                handleResult(chargeResult, resultListener)
+            }
+        }
+
+        fun register(
+            fragment: Fragment,
+            resultListener: CheckoutResultListener
+        ): ActivityResultLauncher<ChargeParams> {
+            return fragment.registerForActivityResult(PayWithCheckout()) { chargeResult ->
+                handleResult(chargeResult, resultListener)
+            }
+        }
+
+        private fun handleResult(chargeResult: ChargeResult, resultListener: CheckoutResultListener) {
+            when (chargeResult) {
+                is ChargeResult.Success -> resultListener.onSuccess(chargeResult.transaction)
+                is ChargeResult.Error -> resultListener.onError(chargeResult.exception)
+                ChargeResult.Cancelled -> resultListener.onCancelled()
+            }
+        }
     }
 }
