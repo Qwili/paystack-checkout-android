@@ -3,7 +3,7 @@ package com.paystack.checkout.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
-internal sealed class ChargeResult : Parcelable {
+sealed class ChargeResult : Parcelable {
     @Parcelize
     data class Success(val transaction: Transaction) : ChargeResult()
 
