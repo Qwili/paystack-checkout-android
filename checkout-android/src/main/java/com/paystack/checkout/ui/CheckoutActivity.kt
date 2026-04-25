@@ -30,6 +30,7 @@ import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import androidx.core.net.toUri
 
 internal class CheckoutActivity : AppCompatActivity() {
     private lateinit var binding: CheckoutActivityBinding
@@ -87,10 +88,17 @@ internal class CheckoutActivity : AppCompatActivity() {
             javaScriptCanOpenWindowsAutomatically = true
             domStorageEnabled = true
         }
+        webView.evaluateJavascript("""
+    window.addEventListener("message", function(e) {
+        console.log("MESSAGE EVENT:", e);
+    });
+""".trimIndent(), null)
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView, url: String) {
                 super.onPageFinished(view, url)
-                listenToWebEvents(view)
+                view.postDelayed({
+                    listenToWebEvents(view)
+                }, 1000)
                 webView.isVisible = true
             }
         }
@@ -117,6 +125,7 @@ internal class CheckoutActivity : AppCompatActivity() {
         val (receiver, sender) = WebViewCompat.createWebMessageChannel(webView)
         receiver.setWebMessageCallback(object : WebMessagePortCompat.WebMessageCallbackCompat() {
             override fun onMessage(port: WebMessagePortCompat, message: WebMessageCompat?) {
+                Log.d(TAG, "Received message: ${message?.data}")
                 val dataStr = message?.data ?: return
                 Log.i(TAG, dataStr)
                 try {
@@ -129,7 +138,7 @@ internal class CheckoutActivity : AppCompatActivity() {
         })
 
         val message = WebMessageCompat("""{"type": "init_port"}""", arrayOf(sender))
-        WebViewCompat.postWebMessage(webView, message, Uri.parse("*"))
+        WebViewCompat.postWebMessage(webView, message, "https://checkout.paystack.com".toUri())
     }
 
     private fun handleCheckoutEvent(checkoutEvent: CheckoutEvent) {
